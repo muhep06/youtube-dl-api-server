@@ -37,7 +37,7 @@ python main.py
 http://localhost:1998/api/info?video={video_url}
 ```
 
-###### Get Video Info
+###### Download Video
 ```
 http://localhost:1998/api/download?video={video_url}
 ```
