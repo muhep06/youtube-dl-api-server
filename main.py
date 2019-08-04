@@ -29,6 +29,16 @@ def stylesheets_map(filename):
     return static_file(filename, root='public/css', mimetype='application/octet-stream')
 
 
+@route('/js/<filename:re:.*\.js>', method='GET')
+def stylesheets_map(filename):
+    return static_file(filename, root='public/js', mimetype='application/javascript')
+
+
+@route('/<language>', method='GET')
+def frontend_download(language):
+    return static_file('index.html', root='public/lang/'+language, mimetype='text/html')
+
+
 @route('/api/<apiname>')
 def api(apiname):
     try:
@@ -62,7 +72,7 @@ def download(url):
 
 @route('/api/queue', method='GET')
 def q_size():
-    return {"success": True, "size": json.dumps(list(yt_queue.queue))}
+    return {"status": True, "size": list(yt_queue.queue)}
 
 
 def work_to_me():
