@@ -14,25 +14,17 @@ app_defaults = {
 }
 
 
-def is_set(variable):
-    try:
-        x = variable
-        return True
-    except KeyError:
-        return False
-
-
-@route('/')
+@route('/', method='GET')
 def index():
     return static_file('index.html', root='public', mimetype='text/html')
 
 
-@route('/css/<filename:re:.*\.css>')
+@route('/css/<filename:re:.*\.css>', method='GET')
 def stylesheets(filename):
     return static_file(filename, root='public/css', mimetype='text/css')
 
 
-@route('/css/<filename:re:.*\.map>')
+@route('/css/<filename:re:.*\.map>', method='GET')
 def stylesheets_map(filename):
     return static_file(filename, root='public/css', mimetype='application/octet-stream')
 
