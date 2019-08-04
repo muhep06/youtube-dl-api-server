@@ -4,6 +4,21 @@ This is a youtube-dl API server! You can make easily youtube-dl integrated apps 
 
 **Currently under development. The server ip and port can be changed in main.py. Will be improved with new updates.**
 
+Mp3Bot YouTube-dl API Server now supporting download mp3 from easily!
+
+* English
+```
+http://localhost:1998/en
+```
+![English Mp3 Download page](images/en.png)
+
+* Turkish
+```
+http://localhost:1998/tr
+```
+![English Mp3 Download page](images/tr.png)
+
+
 ### Requirements
 
 * Python 3
