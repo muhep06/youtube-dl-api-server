@@ -1,0 +1,9 @@
+version: '3'
+services:
+  youtube-dl:
+    build: .
+    container_name: youtube-dl
+    ports:
+      - 1998:1998
+    environment:
+      - PYTHONUNBUFFERED=1
