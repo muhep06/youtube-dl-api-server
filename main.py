@@ -89,7 +89,7 @@ thread.start()
 
 print("Started download thread")
 
-run(host='localhost', port=1998)
+run(host='0.0.0.0', port=1998)
 
 done = True
 thread.join()
