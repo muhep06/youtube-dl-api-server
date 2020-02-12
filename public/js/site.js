@@ -11,7 +11,7 @@ $(document).ready(function () {
                 }
             });
         } else {
-            alert("This is not a valid YouTube Video Url");
+            alert("This is not a valid YouTube Video Url!");
         }
     });
     download_queue();
