@@ -6,6 +6,8 @@ This is a youtube-dl API server! You can make easily youtube-dl integrated apps 
 
 Mp3Bot YouTube-dl API Server now supporting download mp3 from easily!
 
+**🎉🥳Now Youtube-dl Api Server is out for [Docker](https://hub.docker.com/repository/docker/muhep/youtube-dl-api-server).**
+
 * English
 ```
 http://localhost:1998/en
