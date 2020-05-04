@@ -1,12 +1,14 @@
 FROM python:3.7-slim
 
-RUN pip3 install --upgrade aiofiles astroid bottle colorama isort \
-    lazy-object-proxy mccabe multidict pylint six typed-ast websockets wrapt youtube-dl
-
-ADD main.py /data/main.py
-ADD public /data/public
+ADD . /data
 
 WORKDIR /data
+
+RUN apt-get -y update
+
+RUN apt-get -y install ffmpeg
+
+RUN pip3 install -r requirements.txt
 
 EXPOSE 1998
 
