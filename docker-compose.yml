@@ -7,3 +7,5 @@ services:
       - 1998:1998
     environment:
       - PYTHONUNBUFFERED=1
+    volumes:
+    - .:/data
