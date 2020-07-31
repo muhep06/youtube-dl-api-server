@@ -21,6 +21,7 @@ info_conf = {
 }
 
 
+
 @route('/', method='GET')
 def index():
     return static_file('index.html', root='public', mimetype='text/html')
@@ -73,12 +74,12 @@ def info(video, forced=False):
     download = forced
     if os.path.isfile('./downloaded/' + extract_video_id(video) + '.webm'):
         download = False
-
+    
     with YoutubeDL(info_conf) as ydl:
         info_dict = ydl.extract_info(video, download)
         parts = request.urlparts
         if forced:
-            url = parts.scheme + '://' + parts.netloc + '/play/' + info_dict.get("id", None)
+            url = getHost() + '/play/' + info_dict.get("id", None)
         else:
             url = info_dict.get("url", None)
 
@@ -117,6 +118,13 @@ def extract_video_id(url):
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
 
+
+def getHost():
+    env = os.environ.get('YOUTUBEDL_API_HOST')
+    if not env:
+        parts = request.urlparts
+        env = parts.scheme + '://' + parts.netloc
+    return env
 
 yt_queue = Queue()
 done = False
