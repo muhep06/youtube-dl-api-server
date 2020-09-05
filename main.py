@@ -93,9 +93,9 @@ def info(video, forced=False, file_format='webm'):
     with YoutubeDL(conf) as ydl:
         info_dict = ydl.extract_info(video, forced)
         if can_internal_uri:
-            url = get_host() + '/play'
+            url = get_host() + '/play/'
             if file_format in allowed_formats and file_format != 'webm':
-                url += '/' + file_format + '/'
+                url += file_format + '/'
             url += info_dict.get("id", None)
         else:
             url = info_dict.get("url", None)
