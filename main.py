@@ -1,10 +1,10 @@
-from bottle import route, run, static_file, request
-from youtube_dl import YoutubeDL
+import os
 from queue import Queue
 from threading import Thread
-import json
-import os
 from urllib.parse import urlparse, parse_qs
+
+from bottle import route, run, static_file, request
+from youtube_dl import YoutubeDL
 
 app_defaults = {
     'format': 'bestaudio/best',
@@ -46,9 +46,14 @@ def frontend_download(language):
     return static_file('index.html', root='public/lang/' + language, mimetype='text/html')
 
 
-@route('/play/<vide_id>', method='GET')
-def serve_webm(vide_id):
-    return static_file(vide_id + '.webm', root='downloaded', mimetype='audio/webm')
+@route('/play/<video_id>', method='GET')
+def serve_webm(video_id):
+    return static_file(video_id + '.webm', root='downloaded/webm', mimetype='audio/webm')
+
+
+@route('/play/<file_format>/<video_id>', method='GET')
+def serve_audio(file_format, video_id):
+    return static_file(video_id + '.' + file_format, root='downloaded/' + file_format, mimetype='audio/' + file_format)
 
 
 @route('/api/<apiname>')
@@ -57,9 +62,12 @@ def api(apiname):
         query = request.query
         if apiname == 'info':
             forced = False
+            file_format = 'webm'
             if query.get('forced'):
                 forced = str2bool(query.get('forced'))
-            return info(query['video'], forced)
+            if query.get('format'):
+                file_format = query.get('format')
+            return info(query['video'], forced, file_format)
         elif apiname == 'download':
             url = query.video
             yt_queue.put(url)
@@ -68,16 +76,27 @@ def api(apiname):
         return {'status': False, 'message': 'Some parameters is missing!'}
 
 
-def info(video, forced=False):
-    download = forced
-    if os.path.isfile('./downloaded/' + extract_video_id(video) + '.webm'):
-        download = False
+def info(video, forced=False, file_format='webm'):
+    can_internal_uri = forced
+    allowed_formats = get_allowed_formats()
+    conf = adjust_conf(info_conf, file_format)
 
-    with YoutubeDL(info_conf) as ydl:
-        info_dict = ydl.extract_info(video, download)
-        parts = request.urlparts
-        if forced:
-            url = getHost() + '/play/' + info_dict.get("id", None)
+    if not file_format in allowed_formats:
+        return {
+            'status': False,
+            'message': 'Wrong file format. Supported file formats: ' + ', '.join(allowed_formats)
+        }
+
+    if os.path.isfile('./downloaded/' + file_format + '/' + extract_video_id(video) + '.' + file_format):
+        forced = False
+
+    with YoutubeDL(conf) as ydl:
+        info_dict = ydl.extract_info(video, forced)
+        if can_internal_uri:
+            url = get_host() + '/play'
+            if file_format in allowed_formats and file_format != 'webm':
+                url += '/' + file_format + '/'
+            url += info_dict.get("id", None)
         else:
             url = info_dict.get("url", None)
 
@@ -88,6 +107,32 @@ def info(video, forced=False):
             'description': info_dict.get('description', None),
             'url': url
         }
+
+
+def adjust_conf(conf=None, file_format='webm'):
+    if conf is None:
+        conf = {}
+    if file_format == 'mp3':
+        conf.update({
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '256',
+            }]
+        })
+    elif file_format == 'm4a':
+        conf.update({
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'm4a',
+                'preferredquality': '256',
+            }]
+        })
+
+    conf.update({
+        'outtmpl': './downloaded/' + file_format + '/%(id)s.%(ext)s',
+    })
+    return conf
 
 
 def download(url):
@@ -117,12 +162,20 @@ def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
 
-def getHost():
+def get_host():
     env = os.environ.get('YOUTUBEDL_API_HOST')
     if not env:
         parts = request.urlparts
         env = parts.scheme + '://' + parts.netloc
     return env
+
+
+def get_allowed_formats():
+    formats = ['webm', 'm4a', 'mp3']
+    env = os.environ.get('YOUTUBEDL_API_FORMATS')
+    if env:
+        formats = env.split(',')
+    return formats
 
 
 yt_queue = Queue()
