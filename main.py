@@ -4,7 +4,7 @@ from threading import Thread
 from urllib.parse import urlparse, parse_qs
 
 from bottle import route, run, static_file, request
-from youtube_dl import YoutubeDL
+from yt_dlp import YoutubeDL
 
 app_defaults = {
     'format': 'bestaudio/best',

@@ -11,4 +11,4 @@ six
 typed-ast
 websockets
 wrapt
-youtube-dl
+yt-dlp
