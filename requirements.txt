@@ -1,14 +1,2 @@
-aiofiles
-astroid
-bottle
-colorama
-isort
-lazy-object-proxy
-mccabe
-multidict
-pylint
-six
-typed-ast
-websockets
-wrapt
-yt-dlp
+bottle==0.12.23
+yt_dlp==2023.1.6
